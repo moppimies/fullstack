@@ -30,10 +30,7 @@ const App = () => {
     copy[selected] += 1
     asetaPisteet(copy)
     
-    
-    console.log(copy.indexOf(Math.max(...copy)))
     let arvo = copy.indexOf(Math.max(...copy))
-    
     asetaSuurin(arvo)
   }
 
