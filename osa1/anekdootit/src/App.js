@@ -30,10 +30,10 @@ const App = () => {
     copy[selected] += 1
     asetaPisteet(copy)
     
-    //Päivittää pisteet vasta kun on ns. johdossa
+    
     console.log(copy.indexOf(Math.max(...copy)))
     let arvo = copy.indexOf(Math.max(...copy))
-    //TÄÄ VITUTTAA MUA KU EI TOIMI
+    
     asetaSuurin(arvo)
   }
 
