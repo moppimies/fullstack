@@ -13,7 +13,7 @@ const createPerson = henkilo => {
 
 const poistaHenkilo = id => {
     const pyynto = axios.delete(`${baseUrl}/${id}`)
-    return pyynto.then(response => response.data)
+    return pyynto.then((response) => response.data)
 }
 
 const muutaHenkilo =(id, henkilo) => {

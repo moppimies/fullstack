@@ -1,6 +1,28 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
+import './index.css'
 
+const Ilmoitus = ({message,onnistuiko}) => {
+  if (message === null) {
+    return null 
+  }
+  switch(onnistuiko) {
+    case false:
+      return (
+          <div className='error'>
+            {message}
+          </div>
+        )
+    case true:
+      return (
+        <div className='onnistui'>
+          {message}
+        </div>
+      )
+    default:
+      console.log("hölömö")
+  }
+}
 
 const Filter = (props) => {
   return (
@@ -47,6 +69,9 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setFilter] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [onnistuiko, setOnnistuiko] = useState(true)
+
 
   useEffect(() => {
     personService
@@ -63,9 +88,26 @@ const App = () => {
         
         const muokattu = {
           name: henkilo.name,
-          number: newNumber
+          number: newNumber,
+          id: henkilo.id
         }
-        personService.muutaHenkilo(henkilo.id, muokattu).then(person => setPersons(persons.map(henkilo => henkilo.id === person.id ? muokattu : henkilo)))
+        personService.muutaHenkilo(henkilo.id, muokattu).then(person => {
+          setPersons(persons.map(henkilo => henkilo.id === person.id ? muokattu : henkilo))},
+          setErrorMessage(`${henkilo.name} number has changed to ${newNumber}`),
+          setOnnistuiko(true),
+          setTimeout(() => {
+            setErrorMessage(null)
+          },5000)
+        )
+        .catch(error => {
+          setErrorMessage(`Person '${henkilo.name}' was already removed from server`)
+          
+        setTimeout(() => {
+          setErrorMessage(null)
+        },5000)
+        setPersons(persons.filter(h => h.id !== henkilo.id))
+        setOnnistuiko(false)
+      })
         return
       }
 
@@ -80,17 +122,38 @@ const App = () => {
       number: newNumber
     }
 
-    personService.createPerson(ihminen).then(uusi => setPersons(persons.concat(uusi)))
+    personService.createPerson(ihminen).then(uusi =>  {
+      setPersons(persons.concat(uusi))},
+      setOnnistuiko(true),
+      setErrorMessage(`${newName} was added to phonebook`),
+      setTimeout(() => {
+        setErrorMessage(null)
+      },5000))
   }
 
   const poista =(id)=> {
-    personService.poistaHenkilo(id).then(vastaus => console.log(vastaus.id)).catch(error => console.log(error))
-    setPersons(persons.filter((person) => person.id !== id))
+
+    personService.poistaHenkilo(id).then(() => {
+      setOnnistuiko(true)},
+      setErrorMessage(`'${(persons.find(henkilo => henkilo.id === id)).name}' was deleted`), 
+      setPersons(persons.filter(person => person.id !== id)),
+      setTimeout(() => {
+        setErrorMessage(null)
+      },5000))
+      .catch(error => {
+      setOnnistuiko(false)
+      setErrorMessage(`Person was already removed from server`)
+    setTimeout(() => {
+      setErrorMessage(null)
+    },5000)
+    setPersons(persons.filter(h => h.id !== id))
+  })
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Ilmoitus message ={errorMessage} onnistuiko={onnistuiko}></Ilmoitus>
       <div>
         <Filter funktio= {e => setFilter(e.target.value)} filter ={newFilter}></Filter>
       </div>
