@@ -81,11 +81,11 @@ app.post('/api/persons',(req,res) => {
         res.status(400).send({error: 'number must be unique'}).end()
         return
     }
-    if (person.name === ""){
+    if (person.name === "" || !person.name){
         res.status(400).send({error: 'name must be set'}).end()
         return
     }
-    if (person.number === ""){
+    if (person.number === "" || !person.number){
         res.status(400).send({error: 'number must be set'}).end()
         return
     }

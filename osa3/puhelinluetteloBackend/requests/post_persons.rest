@@ -1,0 +1,7 @@
+POST https://puhelinluettelo-52or.onrender.com/api/persons
+Content-Type: application/json
+
+{
+    "name":"Viljami",
+    "number":"123"
+}
