@@ -7,7 +7,10 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
+	"build:ui": "rm -rf build && cd ../../osa2/puhelinluettelo && npm run build && cp -r build ../../puhelinluetteloBackend",
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
   },
+  
   "repository": {
     "type": "git",
     "url": "git+https://github.com/moppimies/fullstack.git"
@@ -28,5 +31,6 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
-  }
+  },
+  "proxy": "http://localhost:3001"
 }
