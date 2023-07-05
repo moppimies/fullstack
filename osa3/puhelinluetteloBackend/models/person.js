@@ -12,9 +12,25 @@ mongoose.connect(url)
     console.log("failure", tulos.message)
 })
 
+
+
 const personSchema = new mongoose.Schema( {
-    name: String,
-    number: String,
+    name: {
+        type: String,
+        minlength: 3,
+        required: true
+    },
+    number: {
+        type: String,
+        validate:{
+            validator: function(v) {
+                return /^\d{3}-\d{8}$|^\d{2}-\d{7}$/.test(v)
+                }
+            ,
+            message: 'Number format not accepted'
+        },
+        required: true
+    }
 })
 
 

@@ -100,13 +100,13 @@ const App = () => {
           },5000)
         )
         .catch(error => {
-          setErrorMessage(`Person '${henkilo.name}' was already removed from server`)
-          
+          setErrorMessage(`${error.response.data.error}`)
+          setOnnistuiko(false)
         setTimeout(() => {
           setErrorMessage(null)
         },5000)
-        setPersons(persons.filter(h => h.id !== henkilo.id))
-        setOnnistuiko(false)
+        //setPersons(persons.filter(h => h.id !== henkilo.id))
+        //setOnnistuiko(false)
       })
         return
       }
@@ -122,13 +122,21 @@ const App = () => {
       number: newNumber
     }
 
-    personService.createPerson(ihminen).then(uusi =>  {
+    personService.createPerson(ihminen).then(uusi => {
       setPersons(persons.concat(uusi))},
       setOnnistuiko(true),
       setErrorMessage(`${newName} was added to phonebook`),
       setTimeout(() => {
         setErrorMessage(null)
       },5000))
+      .catch(error => {
+        setOnnistuiko(false)
+        setErrorMessage(`${error.response.data.error}`)
+        console.log(error.response.data)
+        setTimeout(() => {
+          setErrorMessage(null)
+        },5000)
+      })
   }
 
   const poista =(id)=> {

@@ -11,6 +11,9 @@ const errorHandler = (error,req,res,next) => {
     if (error.name ==='CastError') {
         return res.status(400).send({error: 'malformatted id'})
     }
+    else if (error.name === 'ValidationError') {
+        return res.status(400).json({error: error.message})
+    }
     next(error)
 }
 
@@ -26,7 +29,6 @@ app.get('/api/persons',(req,res) => {
     })
     
 })
-
 
 app.get('/info',(req,res) => {
     let date = new Date()
@@ -58,45 +60,36 @@ app.delete('/api/persons/:id',(req,res,next) => {
     
 })
 
-app.post('/api/persons',(req,res) => {
-
+app.post('/api/persons',(req,res,next) => {
     const person = req.body
-
-    if (person.name === "" || !person.name){
+    /*if (person.name === "" || !person.name){
         res.status(400).send({error: 'name must be set'}).end()
         return
     }
     if (person.number === "" || !person.number){
         res.status(400).send({error: 'number must be set'}).end()
         return
-    }
+    }*/
     const lisattava = new Person( {
         name: req.body.name,
         number: req.body.number
     })
 
     lisattava.save().then(result => {
-        console.log(`added ${result.name} ${result.number} to phonebook`)
-        Person.find(result).then(person =>{ //return res.json(result)
-            res.json(person)
-        })
+         res.json(result)
     })
-
+    .catch(error => next(error))
 })
 
+
 app.put('/api/persons/:id',(req,res,next) => {
-    const runko = req.body
-    const person = {
-        name: runko.name,
-        number: runko.number,
-    }
+    const {name, number} = req.body
     
-    Person.findByIdAndUpdate(req.params.id, person, {new: true})
+    Person.findByIdAndUpdate(req.params.id, {name,number}, {new: true, runValidators: true, context: 'query'})
     .then(personFix => {
         res.json(personFix)
     })
     .catch(error => next(error))
-
 })
 
 app.use(errorHandler)
